@@ -213,6 +213,11 @@ button:hover {
         font-size: 10px;
         padding: 3px 6px;
     }
+    
+    /* ランキングリストのスタイル調整（スマホ） */
+    .ranking-list {
+        margin-bottom: 10px;
+    }
 }
 
 .cell.lit {
@@ -232,7 +237,7 @@ button:hover {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 5px;
+    margin-bottom: 15px;
     text-align: center;
 }
 
@@ -241,11 +246,19 @@ button:hover {
     margin: 0;
 }
 
+/* ランキングリストのスタイル */
+.ranking-list {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
 /* ランキングアクションエリアのスタイル */
 .ranking-actions {
     display: flex;
     justify-content: center;
-    margin-bottom: 15px;
+    margin-top: 5px;
 }
 
 /* リセットボタンのスタイル */
@@ -257,18 +270,12 @@ button:hover {
     border-radius: 3px;
     font-size: 11px;
     cursor: pointer;
-    opacity: 0.8;
+    opacity: 0.7;
 }
 
 .reset-button:hover {
     background-color: #d32f2f;
     opacity: 1;
-}
-
-.ranking-list {
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    overflow: hidden;
 }
 
 .ranking-item {
