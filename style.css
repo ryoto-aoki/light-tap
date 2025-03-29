@@ -1,0 +1,206 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f5f5f5;
+}
+
+.game-container {
+    width: 95%;
+    max-width: 500px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+/* 難易度選択のスタイル */
+.difficulty-selector {
+    margin: 15px 0;
+    text-align: center;
+}
+
+select {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+    background-color: white;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #3e8e41;
+}
+
+/* グリッドコンテナのスタイル修正 - 動的サイズに対応 */
+.grid-container {
+    display: grid;
+    grid-gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.cell {
+    aspect-ratio: 1/1;
+    background-color: #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* 難易度によって変わるセルサイズに対応 */
+@media (max-width: 400px) {
+    .cell {
+        min-height: 50px;
+    }
+}
+
+.cell.lit {
+    background-color: #ffeb3b;
+    box-shadow: 0 0 10px rgba(255, 235, 59, 0.7);
+}
+
+/* ランキング表示のスタイル */
+.ranking-container {
+    margin-top: 30px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+.ranking-container h3 {
+    margin-bottom: 15px;
+    color: #333;
+    text-align: center;
+}
+
+.ranking-list {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.ranking-item {
+    display: flex;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.ranking-item:last-child {
+    border-bottom: none;
+}
+
+.ranking-item.highlight {
+    background-color: #f7f7d7;
+}
+
+.rank {
+    width: 30px;
+    font-weight: bold;
+    color: #666;
+}
+
+.player-name {
+    flex: 1;
+    padding-right: 10px;
+}
+
+.player-score {
+    width: 70px;
+    text-align: right;
+    font-weight: bold;
+    color: #4CAF50;
+}
+
+.no-records {
+    padding: 15px;
+    text-align: center;
+    color: #999;
+}
+
+/* 新記録表示のスタイル */
+.new-record-text {
+    color: #ff6f00;
+    font-weight: bold;
+    margin: 10px 0;
+    font-size: 18px;
+}
+
+.name-input {
+    margin: 15px 0;
+}
+
+.name-input input {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    width: 100%;
+    margin-top: 5px;
+    font-size: 16px;
+}
+
+.hidden {
+    display: none;
+}
+
+#game-over {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    z-index: 100;
+}
+
+#game-over h2 {
+    margin-bottom: 15px;
+}
+
+#game-over p {
+    font-size: 18px;
+    margin-bottom: 20px;
+}

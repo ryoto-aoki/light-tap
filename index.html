@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>ライトタップゲーム</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>ライトタップゲーム</h1>
+            <div class="info">
+                <div class="score">スコア: <span id="score">0</span></div>
+                <div class="time">残り時間: <span id="time">30</span>秒</div>
+            </div>
+            
+            <!-- 難易度選択のセレクトボックスを追加 -->
+            <div class="difficulty-selector">
+                <label for="difficulty">難易度: </label>
+                <select id="difficulty">
+                    <option value="3">かんたん (3x3)</option>
+                    <option value="4" selected>ふつう (4x4)</option>
+                    <option value="5">むずかしい (5x5)</option>
+                    <option value="6">超むずかしい (6x6)</option>
+                </select>
+            </div>
+            
+            <button id="start-button">ゲームスタート</button>
+        </div>
+        
+        <div class="grid-container" id="grid">
+            <!-- グリッドはJavaScriptで動的に生成します -->
+        </div>
+        
+        <!-- ランキング表示エリア -->
+        <div class="ranking-container">
+            <h3>ランキング <span id="ranking-difficulty">ふつう (4x4)</span></h3>
+            <div class="ranking-list" id="ranking-list">
+                <!-- ランキングはJavaScriptで動的に生成します -->
+                <div class="no-records">まだ記録がありません</div>
+            </div>
+        </div>
+        
+        <div id="game-over" class="hidden">
+            <h2>ゲーム終了！</h2>
+            <p>最終スコア: <span id="final-score">0</span></p>
+            <!-- 新記録の場合に表示 -->
+            <div id="new-record" class="hidden">
+                <p class="new-record-text">新記録達成！</p>
+                <div class="name-input">
+                    <label for="player-name">名前を入力: </label>
+                    <input type="text" id="player-name" maxlength="10" placeholder="名前（10文字まで）">
+                </div>
+            </div>
+            <button id="restart-button">もう一度プレイ</button>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
