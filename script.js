@@ -115,6 +115,9 @@ function handleCellClick(event) {
         // コンボカウントを増やす
         gameState.comboCount++;
         
+        // タップ成功エフェクト
+        showTapSuccessEffect(event.target, event);
+        
         // 難易度によってポイントボーナスを追加
         const difficultyBonus = gameState.gridSize - 2; // 3x3で1、4x4で2、...
         
@@ -161,6 +164,39 @@ function handleCellClick(event) {
         // ミスタップ時のフラッシュエフェクト
         showMissFlash();
     }
+}
+
+// タップ成功時のエフェクトを表示
+function showTapSuccessEffect(cell, event) {
+    // セルに一時的にtappedクラスを追加
+    cell.classList.add('tapped');
+    
+    // 波紋エフェクトを作成
+    const ripple = document.createElement('div');
+    ripple.className = 'ripple';
+    
+    // クリック位置を取得（セル内の相対位置）
+    const rect = cell.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    
+    // 波紋の位置とサイズを設定
+    ripple.style.left = `${x}px`;
+    ripple.style.top = `${y}px`;
+    const diameter = Math.max(rect.width, rect.height);
+    ripple.style.width = `${diameter * 0.5}px`;
+    ripple.style.height = `${diameter * 0.5}px`;
+    
+    // 波紋をセルに追加
+    cell.appendChild(ripple);
+    
+    // タップエフェクトを一定時間後に削除
+    setTimeout(() => {
+        cell.classList.remove('tapped');
+        if (ripple.parentNode) {
+            ripple.parentNode.removeChild(ripple);
+        }
+    }, 600);
 }
 
 // ミスタップ時のフラッシュエフェクトを表示
