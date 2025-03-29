@@ -29,20 +29,27 @@ self.addEventListener('fetch', event => {
         if (response) {
           return response;
         }
-        // キャッシュがなければネットワークにフェッチ
-        return fetch(event.request)
+        
+        // リクエストのコピーを作成
+        const fetchRequest = event.request.clone();
+        
+        // ネットワークにフェッチ
+        return fetch(fetchRequest)
           .then(response => {
-            // 有効なレスポンスのみキャッシュに追加
+            // 有効なレスポンスでなければ、そのまま返す
             if (!response || response.status !== 200 || response.type !== 'basic') {
               return response;
             }
-
+            
+            // レスポンスのコピーを作成
             const responseToCache = response.clone();
+            
+            // キャッシュに追加
             caches.open(CACHE_NAME)
               .then(cache => {
                 cache.put(event.request, responseToCache);
               });
-
+              
             return response;
           });
       })
@@ -57,6 +64,7 @@ self.addEventListener('activate', event => {
       return Promise.all(
         cacheNames.map(cacheName => {
           if (cacheWhitelist.indexOf(cacheName) === -1) {
+            // 古いバージョンのキャッシュを削除
             return caches.delete(cacheName);
           }
         })
