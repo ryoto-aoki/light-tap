@@ -68,6 +68,53 @@ button:hover {
     background-color: #3e8e41;
 }
 
+/* タイトルに戻るボタンのスタイル */
+#title-button {
+    background-color: #2196F3;
+}
+
+#title-button:hover {
+    background-color: #0b7dda;
+}
+
+/* ゲームオーバー画面のボタン配置 */
+.game-over-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.game-over-buttons button {
+    flex: 1;
+}
+
+/* カウントダウン表示のスタイル */
+.countdown {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.countdown-number {
+    font-size: 120px;
+    color: white;
+    font-weight: bold;
+    animation: countdown-pulse 1s infinite;
+}
+
+@keyframes countdown-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
 /* グリッドコンテナのスタイル修正 - 動的サイズに対応 */
 .grid-container {
     display: grid;
@@ -108,10 +155,35 @@ button:hover {
     padding-top: 20px;
 }
 
-.ranking-container h3 {
+/* ランキングヘッダーのスタイル */
+.ranking-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin-bottom: 15px;
+    position: relative;
+}
+
+.ranking-header h3 {
     color: #333;
-    text-align: center;
+    margin: 0;
+}
+
+/* リセットボタンのスタイル */
+.reset-button {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    font-size: 12px;
+    cursor: pointer;
+    position: absolute;
+    right: 0;
+}
+
+.reset-button:hover {
+    background-color: #d32f2f;
 }
 
 .ranking-list {
@@ -160,10 +232,10 @@ button:hover {
 
 /* 新記録表示のスタイル */
 .new-record-text {
-    color: #ff6f00;
+    color: #ff7700;
     font-weight: bold;
     margin: 10px 0;
-    font-size: 18px;
+    font-size: 1.2rem;
 }
 
 .name-input {
@@ -177,6 +249,19 @@ button:hover {
     width: 100%;
     margin-top: 5px;
     font-size: 16px;
+}
+
+/* 登録完了メッセージのスタイル */
+.registered-message {
+    color: #2ecc71;
+    font-weight: bold;
+    margin: 15px 0;
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .hidden {
@@ -194,6 +279,8 @@ button:hover {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     text-align: center;
     z-index: 100;
+    width: 90%;
+    max-width: 400px;
 }
 
 #game-over h2 {
@@ -203,4 +290,94 @@ button:hover {
 #game-over p {
     font-size: 18px;
     margin-bottom: 20px;
+}
+
+/* スマホ表示の際のレスポンシブ対応 */
+@media (max-width: 400px) {
+    .cell {
+        min-height: 50px;
+    }
+    
+    .info {
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    h1 {
+        font-size: 24px;
+    }
+    
+    .game-container {
+        padding: 15px;
+    }
+    
+    .countdown-number {
+        font-size: 80px;
+    }
+    
+    #game-over {
+        padding: 20px;
+    }
+    
+    .game-over-buttons {
+        flex-direction: column;
+    }
+    
+    button {
+        padding: 12px 15px;
+        font-size: 16px;
+        margin: 5px 0;
+    }
+}
+
+/* ミスタップ時のフラッシュエフェクト */
+.miss-flash {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 0, 0, 0.3);
+    z-index: 1000;
+    pointer-events: none;
+    animation: flash 0.3s;
+}
+
+@keyframes flash {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* ゲームステータス領域 */
+.game-status {
+    height: 40px; /* コンボ表示用の固定高さ領域 */
+    margin: 5px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* コンボ表示のスタイル */
+.combo-display {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ff6b00;
+    height: 30px; /* 固定の高さを設定 */
+    animation: popIn 0.5s;
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.combo-display.hidden {
+    visibility: hidden;
+    opacity: 0;
+    /* display: none を使わず visibility と opacity で制御 */
+}
+
+@keyframes popIn {
+    0% { transform: scale(0.8); opacity: 0; }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); opacity: 1; }
 }
