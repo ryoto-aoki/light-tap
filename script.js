@@ -7,10 +7,13 @@ const config = {
         max: 1500     // 最大間隔
     },
     pointsPerTap: 10, // 1タップあたりの基本ポイント
-    maxRankingEntries: 5 // ランキングの最大表示数
+    maxRankingEntries: 5, // ランキングの最大表示数
+    countdownTime: 3, // カウントダウン時間（秒）
+    misTapPenalty: 5, // ミスタップ時の減点
+    comboBonus: 2     // コンボボーナス（コンボ数ごとに加算するポイント）
 };
 
-// ゲームの状態管理
+// ゲームの状態
 let gameState = {
     isPlaying: false,
     score: 0,
@@ -18,9 +21,12 @@ let gameState = {
     currentLitCell: null,
     timerId: null,
     lightTimerId: null,
+    countdownTimerId: null,
     gridSize: config.defaultGridSize,  // 現在のグリッドサイズ
     currentRank: null, // 現在のランキング位置（新記録の場合）
-    playerName: '' // プレイヤー名
+    playerName: '', // プレイヤー名
+    isTitle: true, // タイトル画面かどうか
+    comboCount: 0  // 連続正解数
 };
 
 // DOM要素
@@ -31,11 +37,18 @@ const gridContainer = document.getElementById('grid');
 const gameOverElement = document.getElementById('game-over');
 const finalScoreElement = document.getElementById('final-score');
 const restartButton = document.getElementById('restart-button');
+const titleButton = document.getElementById('title-button');
 const difficultySelector = document.getElementById('difficulty');  // 難易度選択要素
 const rankingList = document.getElementById('ranking-list');
 const rankingDifficulty = document.getElementById('ranking-difficulty');
 const newRecordElement = document.getElementById('new-record');
 const playerNameInput = document.getElementById('player-name');
+const countdownElement = document.getElementById('countdown');
+const countdownNumberElement = document.querySelector('.countdown-number');
+const missFlashElement = document.getElementById('miss-flash');
+const comboDisplayElement = document.getElementById('combo-display');
+const comboCountElement = document.getElementById('combo-count');
+const resetRankingButton = document.getElementById('reset-ranking');
 
 // 難易度の表示名を取得する関数
 function getDifficultyName(size) {
@@ -99,10 +112,29 @@ function handleCellClick(event) {
     
     // 光っているセルをクリックした場合
     if (gameState.currentLitCell === clickedIndex) {
+        // コンボカウントを増やす
+        gameState.comboCount++;
+        
         // 難易度によってポイントボーナスを追加
         const difficultyBonus = gameState.gridSize - 2; // 3x3で1、4x4で2、...
-        gameState.score += config.pointsPerTap + difficultyBonus * 2;
+        
+        // コンボボーナスを計算（コンボ数が増えるほどボーナス増加）
+        const comboBonus = gameState.comboCount > 1 ? (gameState.comboCount - 1) * config.comboBonus : 0;
+        
+        // スコア計算
+        gameState.score += config.pointsPerTap + difficultyBonus * 2 + comboBonus;
         scoreElement.textContent = gameState.score;
+        
+        // コンボ表示の更新
+        if (gameState.comboCount > 1) {
+            comboCountElement.textContent = gameState.comboCount;
+            comboDisplayElement.classList.remove('hidden');
+            
+            // 3秒後にコンボ表示を非表示にする
+            setTimeout(() => {
+                comboDisplayElement.classList.add('hidden');
+            }, 1500);
+        }
         
         // 現在光っているセルを消灯
         const currentLitElement = document.querySelector('.cell.lit');
@@ -115,7 +147,30 @@ function handleCellClick(event) {
         
         // 次のセルを光らせる
         lightRandomCell();
+    } else {
+        // ミスタップした場合の処理
+        
+        // コンボをリセット
+        gameState.comboCount = 0;
+        comboDisplayElement.classList.add('hidden');
+        
+        // ペナルティ（減点）
+        gameState.score = Math.max(0, gameState.score - config.misTapPenalty);
+        scoreElement.textContent = gameState.score;
+        
+        // ミスタップ時のフラッシュエフェクト
+        showMissFlash();
     }
+}
+
+// ミスタップ時のフラッシュエフェクトを表示
+function showMissFlash() {
+    missFlashElement.classList.remove('hidden');
+    
+    // アニメーション終了後に非表示に戻す
+    setTimeout(() => {
+        missFlashElement.classList.add('hidden');
+    }, 300);
 }
 
 // ランダムなセルを光らせる
@@ -158,17 +213,46 @@ function updateTimer() {
     }
 }
 
-// ゲーム開始
+// カウントダウン処理
+function startCountdown() {
+    // カウントダウン表示を初期化
+    let countdownValue = config.countdownTime;
+    countdownNumberElement.textContent = countdownValue;
+    countdownElement.classList.remove('hidden');
+    
+    // カウントダウンタイマーの設定
+    gameState.countdownTimerId = setInterval(() => {
+        countdownValue--;
+        
+        if (countdownValue > 0) {
+            // カウントダウン数字を更新
+            countdownNumberElement.textContent = countdownValue;
+        } else {
+            // カウントダウン終了
+            clearInterval(gameState.countdownTimerId);
+            countdownElement.classList.add('hidden');
+            
+            // 実際のゲーム開始
+            startGameMain();
+        }
+    }, 1000);
+}
+
+// ゲーム開始（カウントダウン前の準備）
 function startGame() {
+    // タイトル画面からゲーム画面へ
+    gameState.isTitle = false;
+    
     // グリッドを選択された難易度で再初期化
     initGrid();
     
     // 状態をリセット
-    gameState.isPlaying = true;
+    gameState.isPlaying = false; // カウントダウン中はまだプレイ中にしない
     gameState.score = 0;
     gameState.timeLeft = config.gameTime;
     gameState.currentLitCell = null;
     gameState.currentRank = null;
+    gameState.comboCount = 0; // コンボをリセット
     
     // 表示を更新
     scoreElement.textContent = gameState.score;
@@ -177,6 +261,18 @@ function startGame() {
     difficultySelector.disabled = true; // ゲーム中は難易度選択を無効化
     gameOverElement.classList.add('hidden');
     newRecordElement.classList.add('hidden');
+    comboDisplayElement.classList.add('hidden'); // コンボ表示を非表示
+    comboCountElement.textContent = '0';
+    
+    // カウントダウン開始
+    startCountdown();
+}
+
+// 実際のゲーム開始（カウントダウン後）
+function startGameMain() {
+    // ゲーム状態を更新
+    gameState.isPlaying = true;
+    gameState.comboCount = 0; // コンボをリセット
     
     // タイマーを開始
     gameState.timerId = setInterval(updateTimer, 1000);
@@ -185,11 +281,32 @@ function startGame() {
     lightRandomCell();
 }
 
+// タイトル画面に戻る
+function returnToTitle() {
+    // ゲームオーバー画面を非表示
+    gameOverElement.classList.add('hidden');
+    
+    // タイトル画面状態にする
+    gameState.isTitle = true;
+    
+    // ボタンとセレクタを有効化
+    startButton.disabled = false;
+    difficultySelector.disabled = false;
+    
+    // グリッドを再初期化（難易度変更の反映のため）
+    initGrid();
+}
+
 // ゲーム終了
 function endGame() {
     gameState.isPlaying = false;
     clearInterval(gameState.timerId);
     clearTimeout(gameState.lightTimerId);
+    clearInterval(gameState.countdownTimerId);
+    
+    // カウントダウン表示を隠す（念のため）
+    countdownElement.classList.add('hidden');
+    comboDisplayElement.classList.add('hidden'); // コンボ表示も非表示
     
     // 光っているセルを消灯
     const litCell = document.querySelector('.cell.lit');
@@ -200,8 +317,6 @@ function endGame() {
     // ゲームオーバー画面を表示
     finalScoreElement.textContent = gameState.score;
     gameOverElement.classList.remove('hidden');
-    startButton.disabled = false;
-    difficultySelector.disabled = false; // ゲーム終了後に難易度選択を有効化
     
     // ランキングをチェック
     checkRanking();
@@ -271,26 +386,27 @@ function checkRanking() {
         playerNameInput.value = '';
         playerNameInput.focus();
         
+        // ゲームオーバー画面のボタンを隠す
+        document.querySelector('.game-over-buttons').classList.add('hidden');
+        
         // Enterキーで名前を確定
         playerNameInput.onkeydown = function(e) {
             if (e.key === 'Enter') {
                 submitScore();
             }
         };
-        
-        // 再プレイボタンクリックでも名前を確定
-        restartButton.onclick = submitScore;
     } else {
-        // 通常の再プレイ
+        // 通常の再プレイとタイトルに戻る
         restartButton.onclick = startGame;
+        titleButton.onclick = returnToTitle;
     }
     
     // ランキング表示を更新
     updateRankingDisplay();
 }
 
-// スコアを登録して再プレイ
-function submitScore() {
+// スコアを登録して次の画面へ
+function submitScore(goToTitle = false) {
     const difficulty = gameState.gridSize;
     const score = gameState.score;
     const name = playerNameInput.value.trim() || 'ゲスト';
@@ -302,11 +418,30 @@ function submitScore() {
     // ランキング表示を更新
     updateRankingDisplay();
     
-    // 再プレイボタンの動作を元に戻す
-    restartButton.onclick = startGame;
+    // 名前入力フォームを非表示
+    document.querySelector('.name-input').classList.add('hidden');
     
-    // ゲームを開始
-    startGame();
+    // 「登録しました」メッセージを表示
+    const registeredMsg = document.createElement('p');
+    registeredMsg.className = 'registered-message';
+    registeredMsg.textContent = '登録しました！';
+    
+    // すでにメッセージがある場合は追加しない
+    if (!document.querySelector('.registered-message')) {
+        newRecordElement.appendChild(registeredMsg);
+    }
+    
+    // ボタンを表示して選択可能にする
+    document.querySelector('.game-over-buttons').classList.remove('hidden');
+    
+    // ボタンのイベントリスナーを設定
+    restartButton.onclick = startGame;
+    titleButton.onclick = returnToTitle;
+    
+    // タイトルに戻るフラグが立っている場合（前の実装との互換性のため）
+    if (goToTitle) {
+        returnToTitle();
+    }
 }
 
 // ランキング表示を更新
@@ -370,8 +505,50 @@ function initGame() {
     initGrid();
 }
 
+// ランキングをリセットする
+function resetRanking() {
+    if (confirm('現在の難易度のランキングをリセットしますか？\n※この操作は元に戻せません。')) {
+        const difficulty = gameState.gridSize;
+        
+        // 空のランキングで上書き保存
+        saveRanking(difficulty, []);
+        
+        // ランキング表示を更新
+        updateRankingDisplay();
+        
+        // 確認アラート
+        alert(`${getDifficultyName(difficulty)}のランキングをリセットしました。`);
+    }
+}
+
+// 全難易度のランキングをリセットする
+function resetAllRankings() {
+    if (confirm('全ての難易度のランキングをリセットしますか？\n※この操作は元に戻せません。')) {
+        // 全ての難易度のランキングをリセット
+        [3, 4, 5, 6].forEach(difficulty => {
+            saveRanking(difficulty, []);
+        });
+        
+        // ランキング表示を更新
+        updateRankingDisplay();
+        
+        // 確認アラート
+        alert('全ての難易度のランキングをリセットしました。');
+    }
+}
+
 // イベントリスナー
 startButton.addEventListener('click', startGame);
+titleButton.addEventListener('click', returnToTitle);
+resetRankingButton.addEventListener('click', function(e) {
+    // Shiftキーを押しながらクリックで全難易度リセット
+    if (e.shiftKey) {
+        resetAllRankings();
+    } else {
+        // 通常クリックで現在の難易度のみリセット
+        resetRanking();
+    }
+});
 
 // ページロード時にゲームを初期化
 window.addEventListener('load', initGame);
