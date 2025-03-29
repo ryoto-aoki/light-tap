@@ -122,6 +122,8 @@ button:hover {
     margin-top: 20px;
     margin-bottom: 20px;
     width: 100%;
+    max-width: 100%; /* 幅制限を追加 */
+    overflow: hidden; /* はみ出しを防止 */
 }
 
 .cell {
@@ -139,7 +141,82 @@ button:hover {
 /* 難易度によって変わるセルサイズに対応 */
 @media (max-width: 400px) {
     .cell {
-        min-height: 50px;
+        min-height: 40px; /* セルの最小高さを小さくする */
+        min-width: 40px; /* セルの最小幅も設定 */
+    }
+    
+    /* 6x6グリッド用の特別調整 */
+    .grid-container[style*="repeat(6, 1fr)"] {
+        grid-gap: 5px; /* 超むずかしいモードではギャップを小さくする */
+    }
+    
+    .info {
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    h1 {
+        font-size: 24px;
+    }
+    
+    .game-container {
+        padding: 12px; /* パディングを少し小さく */
+    }
+    
+    .countdown-number {
+        font-size: 80px;
+    }
+    
+    #game-over {
+        padding: 20px;
+    }
+    
+    .game-over-buttons {
+        flex-direction: column;
+    }
+    
+    button {
+        padding: 12px 15px;
+        font-size: 16px;
+        margin: 5px 0;
+    }
+    
+    /* 難易度選択のスタイル調整（スマホ） */
+    .difficulty-selector {
+        margin: 10px 0;
+    }
+    
+    .difficulty-selector label {
+        display: block;
+        margin-bottom: 5px;
+    }
+    
+    select {
+        width: 100%;
+        font-size: 14px;
+        padding: 8px 5px;
+    }
+    
+    /* ランキングヘッダーのスタイル調整（スマホ） */
+    .ranking-header {
+        flex-direction: column;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    
+    .ranking-header h3 {
+        margin-bottom: 10px;
+        width: 100%;
+    }
+    
+    .reset-button {
+        position: static;
+        margin-top: 8px;
+        font-size: 10px;
+        padding: 3px 6px;
+        width: auto;
+        display: inline-block;
     }
 }
 
@@ -290,78 +367,6 @@ button:hover {
 #game-over p {
     font-size: 18px;
     margin-bottom: 20px;
-}
-
-/* スマホ表示の際のレスポンシブ対応 */
-@media (max-width: 400px) {
-    .cell {
-        min-height: 50px;
-    }
-    
-    .info {
-        flex-direction: column;
-        align-items: center;
-        gap: 5px;
-    }
-    
-    h1 {
-        font-size: 24px;
-    }
-    
-    .game-container {
-        padding: 15px;
-    }
-    
-    .countdown-number {
-        font-size: 80px;
-    }
-    
-    #game-over {
-        padding: 20px;
-    }
-    
-    .game-over-buttons {
-        flex-direction: column;
-    }
-    
-    button {
-        padding: 12px 15px;
-        font-size: 16px;
-        margin: 5px 0;
-    }
-    
-    /* 難易度選択のスタイル調整（スマホ） */
-    .difficulty-selector {
-        margin: 10px 0;
-    }
-    
-    .difficulty-selector label {
-        display: block;
-        margin-bottom: 5px;
-    }
-    
-    select {
-        width: 100%;
-        font-size: 14px;
-        padding: 8px 5px;
-    }
-    
-    /* ランキングヘッダーのスタイル調整（スマホ） */
-    .ranking-header {
-        flex-direction: column;
-        margin-bottom: 20px;
-    }
-    
-    .ranking-header h3 {
-        margin-bottom: 10px;
-    }
-    
-    .reset-button {
-        position: static;
-        margin-top: 5px;
-        font-size: 12px;
-        padding: 4px 8px;
-    }
 }
 
 /* ミスタップ時のフラッシュエフェクト */
