@@ -5,6 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>ライトタップゲーム</title>
     <link rel="stylesheet" href="style.css">
+    
+    <!-- PWA対応のための追加 -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#4CAF50">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="タップゲーム">
+    <link rel="apple-touch-icon" href="./icons/icon-192x192.png">
+    
+    <!-- Service Workerの登録 -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(function(registration) {
+                        console.log('Service Worker登録成功:', registration.scope);
+                    })
+                    .catch(function(error) {
+                        console.log('Service Worker登録失敗:', error);
+                    });
+            });
+        }
+    </script>
 </head>
 <body>
     <div class="game-container">
