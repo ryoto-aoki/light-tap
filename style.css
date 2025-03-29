@@ -329,6 +329,39 @@ button:hover {
         font-size: 16px;
         margin: 5px 0;
     }
+    
+    /* 難易度選択のスタイル調整（スマホ） */
+    .difficulty-selector {
+        margin: 10px 0;
+    }
+    
+    .difficulty-selector label {
+        display: block;
+        margin-bottom: 5px;
+    }
+    
+    select {
+        width: 100%;
+        font-size: 14px;
+        padding: 8px 5px;
+    }
+    
+    /* ランキングヘッダーのスタイル調整（スマホ） */
+    .ranking-header {
+        flex-direction: column;
+        margin-bottom: 20px;
+    }
+    
+    .ranking-header h3 {
+        margin-bottom: 10px;
+    }
+    
+    .reset-button {
+        position: static;
+        margin-top: 5px;
+        font-size: 12px;
+        padding: 4px 8px;
+    }
 }
 
 /* ミスタップ時のフラッシュエフェクト */
